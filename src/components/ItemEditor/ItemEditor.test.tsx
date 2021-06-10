@@ -13,6 +13,7 @@ const arrayItemMock = {
   address: '132 Vandervoort Place, Wright, Texas, 7991',
   about: 'test',
   registered: '2019-02-07T12:37:40',
+  complex: { name: 'test', age: 100 },
 };
 
 const props = { data: arrayItemMock, onChange: jest.fn() };
@@ -21,13 +22,15 @@ describe('ItemEditor:', () => {
   beforeEach(() => render(<ItemEditor {...props} />));
 
   it('should render correctly', () => {
-    Object.keys(arrayItemMock)
+    const { id, registered, complex, ...objectEditableProperties } = arrayItemMock;
+
+    Object.keys(objectEditableProperties)
       .filter((key) => key !== 'id')
       .forEach((key) => expect(screen.getByText(new RegExp(`${key}`, 'gi'))).toBeInTheDocument());
 
-    Object.values(arrayItemMock)
-      .filter((value) => typeof value in ['string', 'number'])
-      .forEach((value) => expect(screen.getByText(value.toString())).toBeInTheDocument());
+    Object.values(objectEditableProperties)
+      .filter((value) => ['string', 'number'].includes(typeof value))
+      .forEach((value) => expect(screen.getByDisplayValue(value.toString())).toBeInTheDocument());
   });
 
   it('should call change handler when text input change occur', () => {
